@@ -9,29 +9,55 @@ class Genetic_Algorithm:
         self.fitness = None
 
 
-    # ___ Mutation ___ #
+    # ___ Random Initialization ___ #
     @staticmethod
-    def mutate_uncorrelated_n_step(individual, tau, tau_prime, epsilon=1e-10): # Self-adaptive mutation
-        n = len(individual.weights)
-        
-        # Global and local noise
-        global_noise = np.random.normal(0, 1)
-        local_noise = np.random.normal(0, 1, n)
-        
-        # Update σᵢ (Eq. 4.4)
-        new_sigmas = individual.sigmas * np.exp(tau_prime * global_noise + tau * local_noise)
-        
-        # Apply boundary rule to prevent σ ≈ 0 (from your image)
-        new_sigmas = np.clip(new_sigmas, epsilon, None)
-        
-        # Mutate weights (Eq. 4.5)
-        new_weights = individual.weights + new_sigmas * np.random.normal(0, 1, n)
-        
-        # Return new individual
-        mutated = Genetic_Algorithm(new_weights)
-        mutated.sigmas = new_sigmas
-        return mutated
-    
+    def initialize_population(pop_size, nn_architecture):
+        """
+        pop_size: int, number of individuals in population
+        nn_architecture: list of tuples (input_size, output_size) per layer
+        """
+        population = []
+        for _ in range(pop_size):
+            weights = []
+            for (n_in, n_out) in nn_architecture:
+                # Xavier Glorot normal initialization
+                scale = np.sqrt(2 / (n_in + n_out)) # Xavier normal
+                layer_weights = np.random.randn(n_in * n_out) * scale 
+                weights.extend(layer_weights)
+            individual = Genetic_Algorithm(weights)
+            population.append(individual)
+        return population
+
+
+    # ___ Parent Selection ___ #
+    @staticmethod
+    def tournament_selection(population, fitnesses, num_parents, tournament_size):
+        """
+        Performs tournament selection to choose parents.
+
+        Args:
+            population (list): List of GeneticAlgorithm individuals.
+            fitnesses (list): List of corresponding fitness values.
+            num_parents (int): Number of individuals to select.
+            tournament_size (int): Number of candidates per tournament.
+
+        Returns:
+            list: Selected individuals.
+        """
+        mating_pool = []
+        population_size = len(population) # μ
+
+        for _ in range(num_parents): # num_parents => λ (lambda)
+            # Select k unique individuals without replacement
+            candidates_indices = random.sample(range(population_size), tournament_size)
+            candidates_fitness = [fitnesses[i] for i in candidates_indices]
+
+            # Select the best among them (minimization or maximization problem)
+            best_index = candidates_indices[candidates_fitness.index(max(candidates_fitness))]  # Change to `min` if minimizing
+            mating_pool.append(population[best_index])
+
+        return mating_pool
+
 
     # ___ Crossover (Recombination) ___ #
         """
@@ -43,7 +69,6 @@ class Genetic_Algorithm:
 
         The best practice for α = 0.5
         """
-
     @staticmethod
     def BLX_alpha_crossover(parent1, parent2, alpha=0.5): # Blend Crossover
         
@@ -82,31 +107,71 @@ class Genetic_Algorithm:
             return "The child is out of the boundaries"
 
 
+    # ___ Mutation ___ #
     @staticmethod
-    def tournament_selection(population, fitnesses, num_parents, tournament_size):
-        """
-        Performs tournament selection to choose parents.
+    def mutate_uncorrelated_n_step(individual, tau, tau_prime, epsilon=1e-10): # Self-adaptive mutation
+        n = len(individual.weights)
+        
+        # Global and local noise
+        global_noise = np.random.normal(0, 1)
+        local_noise = np.random.normal(0, 1, n)
+        
+        # Update σᵢ (Eq. 4.4)
+        new_sigmas = individual.sigmas * np.exp(tau_prime * global_noise + tau * local_noise)
+        
+        # Apply boundary rule to prevent σ ≈ 0 (from your image)
+        new_sigmas = np.clip(new_sigmas, epsilon, None)
+        
+        # Mutate weights (Eq. 4.5)
+        new_weights = individual.weights + new_sigmas * np.random.normal(0, 1, n)
+        
+        # Return new individual
+        mutated = Genetic_Algorithm(new_weights)
+        mutated.sigmas = new_sigmas
+        return mutated
+    
 
+    # ___ Survivor Selection (Elitism + GENITOR) ___ #
+    @staticmethod
+    def hybrid_survivor_selection(population, offspring, elitism_count=1, genitor_count=None):
+        """
+        Combines Elitism and GENITOR (Replace-Worst) strategies.
+        
         Args:
-            population (list): List of GeneticAlgorithm individuals.
-            fitnesses (list): List of corresponding fitness values.
-            num_parents (int): Number of individuals to select.
-            tournament_size (int): Number of candidates per tournament.
+            population (list): Current generation (list of individuals with .fitness attribute).
+            offspring (list): New individuals generated from crossover + mutation.
+            elitism_count (int): Number of best individuals to carry over from current generation.
+            genitor_count (int or None): Number of worst individuals to replace. If None, auto-calculated.
 
         Returns:
-            list: Selected individuals.
+            list: Next generation.
         """
-        mating_pool = []
-        population_size = len(population) # μ
+        # Ensure all individuals have a defined fitness
+        assert all(ind.fitness is not None for ind in population), "Current population must have evaluated fitness"
+        assert all(ind.fitness is not None for ind in offspring), "Offspring must have evaluated fitness"
 
-        for _ in range(num_parents): # num_parents => λ (lambda)
-            # Select k unique individuals without replacement
-            candidates_indices = random.sample(range(population_size), tournament_size)
-            candidates_fitness = [fitnesses[i] for i in candidates_indices]
+        # Sort current population by fitness (descending: assuming maximization)
+        sorted_population = sorted(population, key=lambda ind: ind.fitness, reverse=True)
 
-            # Select the best among them (minimization or maximization problem)
-            best_index = candidates_indices[candidates_fitness.index(max(candidates_fitness))]  # Change to `min` if minimizing
-            mating_pool.append(population[best_index])
+        # Elitism: Keep top individuals
+        elites = sorted_population[:elitism_count]
 
-        return mating_pool
+        # GENITOR: Replace the worst individuals with best offspring
+        if genitor_count is None:
+            genitor_count = len(offspring) - elitism_count
         
+        sorted_offspring = sorted(offspring, key=lambda ind: ind.fitness, reverse=True)
+        top_offspring = sorted_offspring[:genitor_count]
+
+        # Replace worst individuals
+        survivors = elites + top_offspring
+
+        # Fill remaining if needed
+        total_needed = len(population)
+        if len(survivors) < total_needed:
+            remaining = sorted_population[elitism_count:-genitor_count] if genitor_count > 0 else sorted_population[elitism_count:]
+            survivors.extend(remaining[:total_needed - len(survivors)])
+
+        # Truncate if too long
+        return survivors[:total_needed]
+    
