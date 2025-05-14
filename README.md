@@ -123,8 +123,8 @@ adjusts its position in the search space based on its own best-known position an
 
 *   **Programming Language:** Python.
 *   **Core Libraries:** `numpy` for numerical operations, `tensorflow` primarily for loading and preprocessing the MNIST dataset, `matplotlib` and `seaborn` for visualizations, `scikit-learn` for performance metrics (confusion matrix, classification report), and `joblib` for parallelizing fitness evaluations in island models.
-*   **User Interface:** A Streamlit application (`app.py`, derived from `final-ea-project (1).ipynb`) was developed to provide an interactive platform for running GA and DE island models, configuring parameters, and visualizing results.
-*   **Code Structure:** The `final-ea-project (1).ipynb` notebook demonstrates a class-based structure, encapsulating functionalities for data loading (`DataLoader`), neural network operations (`NeuralNetwork`), visualization (`Visualizer`), and the Streamlit application logic (`StreamlitApp` which includes EA implementations).
+*   **User Interface:** A Streamlit application (`app.py`, derived from `final-ea-project.ipynb`) was developed to provide an interactive platform for running GA and DE island models, configuring parameters, and visualizing results.
+*   **Code Structure:** The `final-ea-project.ipynb` notebook demonstrates a class-based structure, encapsulating functionalities for data loading (`DataLoader`), neural network operations (`NeuralNetwork`), visualization (`Visualizer`), and the Streamlit application logic (`StreamlitApp` which includes EA implementations).
 
 ## 6. Results and Comparative Discussion (Qualitative)
 
@@ -188,14 +188,14 @@ pip install tensorflow numpy pandas matplotlib seaborn scikit-learn joblib strea
     # or
     jupyter lab
     ```
-4.  Open `GAIsland.ipynb`, `DE_Island.ipynb`, or `final-ea-project (1).ipynb`.
-5.  Execute cells sequentially to observe the implementations and outputs. Note that `final-ea-project (1).ipynb` contains the most integrated code, including classes for data, network, visualization, and the Streamlit app structure.
+4.  Open `GAIsland.ipynb`, `DE_Island.ipynb`, or `final-ea-project.ipynb`.
+5.  Execute cells sequentially to observe the implementations and outputs. Note that `final-ea-project.ipynb` contains the most integrated code, including classes for data, network, visualization, and the Streamlit app structure.
 
 ### 9.3. Running the Streamlit Application
 
-The `final-ea-project (1).ipynb` notebook contains the code for the Streamlit application. This code needs to be extracted and saved as an `app.py` file to be run.
+The `final-ea-project.ipynb` notebook contains the code for the Streamlit application. This code needs to be extracted and saved as an `app.py` file to be run.
 
-1.  Carefully copy the Python code corresponding to the Streamlit application from the relevant cells in `final-ea-project (1).ipynb` and save it into a new file named `app.py` in the root of the project directory.
+1.  Carefully copy the Python code corresponding to the Streamlit application from the relevant cells in `final-ea-project.ipynb` and save it into a new file named `app.py` in the root of the project directory.
 2.  In your terminal, ensure you are in the project directory where `app.py` is located, and execute:
     ```bash
     streamlit run app.py
@@ -206,11 +206,10 @@ The `final-ea-project (1).ipynb` notebook contains the code for the Streamlit ap
 
 *   `GAIsland.ipynb`: Jupyter notebook detailing the implementation of a Genetic Algorithm with an island model for MNIST digit classification.
 *   `DE_Island.ipynb`: Jupyter notebook detailing the implementation of Differential Evolution with an island model for MNIST digit classification.
-*   `final-ea-project (1).ipynb`: A comprehensive Jupyter notebook that refactors the code into a class-based structure (DataLoader, NeuralNetwork, Visualizer, StreamlitApp) and contains the full code for the Streamlit user interface, integrating GA and DE island models.
-*   `pasted_content.txt`: Original project guidelines (provided for initial context, less critical for the public-facing academic README).
-*   `README.md` (or `README_v2.md`): This document, providing an academic overview and documentation for the project and its various algorithmic explorations.
-*   (Potentially) `app.py`: The Streamlit application script, if extracted from `final-ea-project (1).ipynb`.
-*   (Potentially) `saved_models/`: A directory where trained neural network models (weights) might be saved by the Streamlit application (e.g., `ga_model.pkl`, `de_model.pkl`).
+*   `final-ea-project.ipynb`: A comprehensive Jupyter notebook that refactors the code into a class-based structure (DataLoader, NeuralNetwork, Visualizer, StreamlitApp) and contains the full code for the Streamlit user interface, integrating GA and DE island models.
+*   `README.md`: This document, providing an academic overview and documentation for the project and its various algorithmic explorations.
+*   `app.py`: The Streamlit application script, if extracted from `final-ea-project.ipynb`.
+*   `saved_models/`: A directory where trained neural network models (weights) might be saved by the Streamlit application (e.g., `ga_model.pkl`, `de_model.pkl`).
 
 ## 11. Academic References (Illustrative)
 
