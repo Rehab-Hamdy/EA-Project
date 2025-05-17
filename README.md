@@ -193,12 +193,12 @@ pip install tensorflow numpy pandas matplotlib seaborn scikit-learn joblib strea
 
 ### 9.3. Running the Streamlit Application
 
-The `final-ea-project.ipynb` notebook contains the code for the Streamlit application. This code needs to be extracted and saved as an `app.py` file to be run.
+The `final-ea-project.ipynb` notebook contains the code for the Streamlit application. This code needs to be extracted and saved as an `Streamlit_app.py` file to be run.
 
-1.  Carefully copy the Python code corresponding to the Streamlit application from the relevant cells in `final-ea-project.ipynb` and save it into a new file named `app.py` in the root of the project directory.
-2.  In your terminal, ensure you are in the project directory where `app.py` is located, and execute:
+1.  Carefully copy the Python code corresponding to the Streamlit application from the relevant cells in `final-ea-project.ipynb` and save it into a new file named `Streamlit_app.py` in the root of the project directory.
+2.  In your terminal, ensure you are in the project directory where `Streamlit_app.py` is located, and execute:
     ```bash
-    streamlit run app.py
+    streamlit run Streamlit_app.py
     ```
 3.  The application should open in your default web browser, allowing interactive exploration of the GA and DE island models for neuroevolution.
 
